@@ -21,21 +21,20 @@ app.get('/screams',(req,res)=>{
     .then(data=>{
     let screams = [];
     data.forEach(doc =>{
-        screams.push(doc.data());
+        screams.push({
+            
+            screamId: doc.id,
+            body : doc.data().body,
+            userHandle : doc.data().userHandle,
+            createAt : doc.data().createAt
+
+        }); 
     })
     return res.json(screams);
     })
     .catch(err => console.error(err));
     }
 )
-
-exports 
-
-exports.helloWorld = functions.https.onRequest((request,response)=>{
-    response.send('Hello world')
-});
-
-
 
 app.post('/screams',(req,res)=>{
 
@@ -58,5 +57,14 @@ app.post('/screams',(req,res)=>{
     })
 }
 )
+
+
+exports.helloWorld = functions.https.onRequest((request,response)=>{
+    response.send('Hello world')
+});
+
+
+
+
 
 exports.api = functions.https.onRequest(app);
