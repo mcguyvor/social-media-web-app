@@ -13,10 +13,26 @@ admin.initializeApp();
 // exports.helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
 // });
+const config ={
+   
+        apiKey: "AIzaSyDuC_6PBim6jphQc6V9Q3jeNaAyAHF__f8",
+        authDomain: "social-media-web-app.firebaseapp.com",
+        databaseURL: "https://social-media-web-app.firebaseio.com",
+        projectId: "social-media-web-app",
+        storageBucket: "social-media-web-app.appspot.com",
+        messagingSenderId: "778610052646",
+        appId: "1:778610052646:web:714be3fc1d2efe0b7720e7",
+        measurementId: "G-P80HNC7WZ8"
+      
+}
+const firebase = require('firebase');
+firebase.initializeApp(config)
+
 
 app.get('/screams',(req,res)=>{
     admin.firestore()
     .collection('screams')
+    .orderBy('createdAt','desc')
     .get()
     .then(data=>{
     let screams = [];
@@ -41,7 +57,7 @@ app.post('/screams',(req,res)=>{
     const newScream = {
         body : req.body.body,
         userHandle : req.body.userHandle,
-        createAt : admin.firestore.Timestamp.fromDate(new Date())      
+        createAt : new Date().toISOString()   
     };
 
     admin
@@ -63,8 +79,31 @@ exports.helloWorld = functions.https.onRequest((request,response)=>{
     response.send('Hello world')
 });
 
+//sign up route
+
+app.post('/signup',(req,res) =>{
+    const newUser ={
+        email : req.body.email,
+        password : req.body.password,
+        confirmPassword : req.body.confirmPassword,
+        handle : req.body.handle,
+    }
+
+    //validate data
+    firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
+        .then(data=>{
+            return res.status(201).json({message : `user ${data.user.uid} sign up successfully`})
+        }).catch(err => {
+            console.error(err);
+            return res.status(500).json({error : err.code})
+        }) 
+});
+
+//validate data
 
 
 
 
-exports.api = functions.https.onRequest(app);
+
+
+exports.api = functions.region('asia-east2').https.onRequest(app);
